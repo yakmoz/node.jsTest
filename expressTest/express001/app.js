@@ -28,9 +28,24 @@ app.configure('production', function(){
 });
 
 // Routes
-
 app.get('/', routes.index);
 app.get('/life',routes.life);
+/*
+app.get('/product',function(req,res){
+    res.render('product',{title:'Product Page'});
+});
+*/
+app.get('/product',function(req,res){
+    res.render('product',{title:'Product Page'});
+});
+
+app.get('/product/insert',function(req,res){
+    res.render('product/insert',{title:'Insert Page'});
+});
+app.get('/product/edit',function(req,res){
+    res.render('product/edit',{title:'Edit Page'});
+});
+
 
 app.listen(process.env.C9_PORT, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
