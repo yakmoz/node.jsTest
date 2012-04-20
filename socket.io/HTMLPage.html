@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='/socket.io/socket.io.js'></script>
+
+<script type="text/javascript" >
+    window.onload=function() {
+       // alert(1);
+        var socket = io.connect();
+        
+        //socket event hook
+        socket.on('smart',function(data){
+            alert(data);
+        });
+        
+        document.getElementById('button').onclick=function() {
+            var text = document.getElementById('text').value;
+            socket.emit('rint',text);
+        };
+        
+        
+        // code change and send
+        document.getElementById('sendcodebtn').onclick=function() {
+            var text = document.getElementById('text').value;
+            var sendcode = document.getElementById('sendcode').value;
+            alert('sendcode:'+sendcode);
+            socket.emit(sendcode,text);
+        };
+    };
+</script>
+</head>
+<body>
+    <p>
+        common msg<input type="text" id="text"/>
+        <input type="button" id="button" value="echo"/>
+    </p> 
+    send code:<input type='text' id='sendcode' value='rint'/>
+    <input type='button' id='sendcodebtn' value='sendcode'/>
+</body>
+</html>
