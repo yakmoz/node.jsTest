@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf8'>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script>
+        window.onload = function() {
+            var room = prompt('room name','');
+            var socket = io.connect();
+            
+            socket.emit('join',room);
+            
+            socket.on('message',function(data){
+                $('<p>'+data+'</p>').appendTo('body');
+            });
+            
+            document.getElementById('button').onclick = function(){
+                socket.emit('message','socket.io room message');
+            };
+            
+        };
+    </script>
+</head>
+<body>
+    <button id="button">EMIT</button>
+</body>
+</html>

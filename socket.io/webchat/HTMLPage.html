@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf8'>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script>
+        window.onload = function() {
+            var room = prompt('room name','');
+            var socket = io.connect();
+            
+            socket.emit('join',room);
+            
+            // 메시지 받으면 뿌림
+            socket.on('recvMsg',function(data){
+                $('<p>'+data+'</p>').appendTo('body');
+            });
+            
+            document.getElementById('button').onclick = function(){
+                var msg = $('#msg').val();
+                //alert('msg:'+msg);
+                socket.emit('sendMsg',msg);
+            };
+            
+        };
+    </script>
+</head>
+<body>
+    <input type='text' id='msg'/>
+    <button id="button">EMIT</button>
+</body>
+</html>

@@ -16,11 +16,11 @@ server.on('request', function(req,res){
 io.sockets.on('connection',function(socket){
    
     socket.on('setname',function(data){
-        socket.set('name',data);
+        socket.set('name',data);        // name 이라는 키로 넣음
     });
     
     socket.on('getname',function(){
-        socket.get('name',function(error,data) {
+        socket.get('name',function(error,data) {        // name 이라는 키로 꺼냄
             console.log('socket getname:%s',data);
             socket.emit('responsename',data);
         });

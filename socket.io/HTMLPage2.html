@@ -10,7 +10,7 @@
             var name = prompt('input name','name');
             
             socket.emit('setname',name);
-            socket.on('responsename',function(data){
+            socket.on('responsename',function(data){    //응답이오면보여줌 
                 alert(data);
             });
             
