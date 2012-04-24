@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf8'>
+    <style>
+        .line { overflow:hidden; }
+        .seat {
+            margin:2px; float:left;
+            width:30px; height:30px;
+            background:Red;
+            border-radius:3px;
+        }
+        .enable { background: Gray; }
+        .enable:hover { background: Black; }
+        .disable { background: Red; }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.7.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- 소켓 생성 -->
+    <script>
+        // 소켓 이벤트를 수행합니다.
+        //var socket = io.connect('http://127.0.0.1:52273');
+        var socket = io.connect();
+        // 이벤트를 연결합니다.
+        socket.on('reserve', function (data) {
+            var $target = $('div[data-x=' + data.x + '][data-y=' + data.y + ']');
+            alert('[][][][][][]data.x:'+data.x+"/data.y"+data.y);
+            $target.removeClass('enable');
+            $target.addClass('disable');
+        });
+    </script>
+    <!-- 초기 좌석 생성 -->
+    <script>
+        $(document).ready(function () {
+            // 변수를 선언합니다.
+            var onClickSeat = function () {
+                var x = $(this).attr('data-x');
+                var y = $(this).attr('data-y');
+                if (confirm('['+x+'/'+y+']좌석을 예약하시겠습니까?')) {
+                    $(this).off('click');
+                    socket.emit('reserve', {
+                        x: x,
+                        y: y
+                    });
+                } else {
+                    alert('취소되었습니다.');
+                }
+            };
+            // Ajax를 수행합니다.
+            $.getJSON('/seats', { dummy: new Date().getTime() }, function (data) {
+                alert('data\n'+data);
+                alert('get sesats info...');
+                // 좌석을 생성합니다.
+                $.each(data, function (indexY, line) {
+                    alert("indexY:"+indexY+"/line:"+line);
+                    // 문서 객체를 생성합니다.
+                    var $line = $('<div></div>').addClass('line');
+                    $.each(line, function (indexX, seat) {
+                        // 문서 객체를 생성하고 변수 $line에 추가합니다.
+                        var $output = $('<div></div>', {
+                            'class': 'seat',
+                            'data-x': indexX,
+                            'data-y': indexY
+                        }).appendTo($line);
+                        alert('seat:'+seat+"/indexX:"+indexX);
+                        if (seat == 1) {
+                            // 좌석이 비어있으면 enable 클래스와 click 리스너를 추가합니다.
+                            $output.addClass('enable').on('click', onClickSeat);
+                        } else {
+                            // 좌석이 사용 불가능하면 disable 클래스를 추가합니다.
+                            $output.addClass('disable');
+                        }
+                    });
+                    // 문서 객체를 추가합니다.
+                    $line.appendTo('body');
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<!--
+아래 내용이 만들어짐... data-x/y 는 html5 의 로컬 저장에 대한 표준임
+<body>
+    <div class="line"><div class="seat enable" data-x="0" data-y="0"></div><div class="seat enable" data-x="1" data-y="0"></div><div class="seat disable" data-x="2" data-y="0"></div><div class="seat enable" data-x="3" data-y="0"></div><div class="seat enable" data-x="4" data-y="0"></div><div class="seat disable" data-x="5" data-y="0"></div><div class="seat disable" data-x="6" data-y="0"></div><div class="seat disable" data-x="7" data-y="0"></div><div class="seat disable" data-x="8" data-y="0"></div><div class="seat enable" data-x="9" data-y="0"></div><div class="seat enable" data-x="10" data-y="0"></div><div class="seat disable" data-x="11" data-y="0"></div><div class="seat enable" data-x="12" data-y="0"></div><div class="seat enable" data-x="13" data-y="0"></div></div>
+    <div class="line"><div class="seat enable" data-x="0" data-y="1"></div><div class="seat enable" data-x="1" data-y="1"></div><div class="seat disable" data-x="2" data-y="1"></div><div class="seat enable" data-x="3" data-y="1"></div><div class="seat enable" data-x="4" data-y="1"></div><div class="seat enable" data-x="5" data-y="1"></div><div class="seat enable" data-x="6" data-y="1"></div><div class="seat enable" data-x="7" data-y="1"></div><div class="seat enable" data-x="8" data-y="1"></div><div class="seat enable" data-x="9" data-y="1"></div><div class="seat enable" data-x="10" data-y="1"></div><div class="seat disable" data-x="11" data-y="1"></div><div class="seat enable" data-x="12" data-y="1"></div><div class="seat enable" data-x="13" data-y="1"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="2"></div><div class="seat enable" data-x="1" data-y="2"></div><div class="seat disable" data-x="2" data-y="2"></div><div class="seat enable" data-x="3" data-y="2"></div><div class="seat enable" data-x="4" data-y="2"></div><div class="seat enable" data-x="5" data-y="2"></div><div class="seat enable" data-x="6" data-y="2"></div><div class="seat enable" data-x="7" data-y="2"></div><div class="seat enable" data-x="8" data-y="2"></div><div class="seat enable" data-x="9" data-y="2"></div><div class="seat enable" data-x="10" data-y="2"></div><div class="seat disable" data-x="11" data-y="2"></div><div class="seat enable" data-x="12" data-y="2"></div><div class="seat enable" data-x="13" data-y="2"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="3"></div><div class="seat enable" data-x="1" data-y="3"></div><div class="seat disable" data-x="2" data-y="3"></div><div class="seat enable" data-x="3" data-y="3"></div><div class="seat enable" data-x="4" data-y="3"></div><div class="seat enable" data-x="5" data-y="3"></div><div class="seat enable" data-x="6" data-y="3"></div><div class="seat enable" data-x="7" data-y="3"></div><div class="seat enable" data-x="8" data-y="3"></div><div class="seat enable" data-x="9" data-y="3"></div><div class="seat enable" data-x="10" data-y="3"></div><div class="seat disable" data-x="11" data-y="3"></div><div class="seat enable" data-x="12" data-y="3"></div><div class="seat enable" data-x="13" data-y="3"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="4"></div><div class="seat enable" data-x="1" data-y="4"></div><div class="seat disable" data-x="2" data-y="4"></div><div class="seat enable" data-x="3" data-y="4"></div><div class="seat enable" data-x="4" data-y="4"></div><div class="seat enable" data-x="5" data-y="4"></div><div class="seat enable" data-x="6" data-y="4"></div><div class="seat enable" data-x="7" data-y="4"></div><div class="seat enable" data-x="8" data-y="4"></div><div class="seat enable" data-x="9" data-y="4"></div><div class="seat enable" data-x="10" data-y="4"></div><div class="seat disable" data-x="11" data-y="4"></div><div class="seat enable" data-x="12" data-y="4"></div><div class="seat enable" data-x="13" data-y="4"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="5"></div><div class="seat enable" data-x="1" data-y="5"></div><div class="seat disable" data-x="2" data-y="5"></div><div class="seat enable" data-x="3" data-y="5"></div><div class="seat enable" data-x="4" data-y="5"></div><div class="seat enable" data-x="5" data-y="5"></div><div class="seat enable" data-x="6" data-y="5"></div><div class="seat enable" data-x="7" data-y="5"></div><div class="seat enable" data-x="8" data-y="5"></div><div class="seat enable" data-x="9" data-y="5"></div><div class="seat enable" data-x="10" data-y="5"></div><div class="seat disable" data-x="11" data-y="5"></div><div class="seat enable" data-x="12" data-y="5"></div><div class="seat enable" data-x="13" data-y="5"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="6"></div><div class="seat enable" data-x="1" data-y="6"></div><div class="seat disable" data-x="2" data-y="6"></div><div class="seat enable" data-x="3" data-y="6"></div><div class="seat enable" data-x="4" data-y="6"></div><div class="seat enable" data-x="5" data-y="6"></div><div class="seat enable" data-x="6" data-y="6"></div><div class="seat enable" data-x="7" data-y="6"></div><div class="seat enable" data-x="8" data-y="6"></div><div class="seat enable" data-x="9" data-y="6"></div><div class="seat enable" data-x="10" data-y="6"></div><div class="seat disable" data-x="11" data-y="6"></div><div class="seat enable" data-x="12" data-y="6"></div><div class="seat enable" data-x="13" data-y="6"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="7"></div><div class="seat enable" data-x="1" data-y="7"></div><div class="seat disable" data-x="2" data-y="7"></div><div class="seat enable" data-x="3" data-y="7"></div><div class="seat enable" data-x="4" data-y="7"></div><div class="seat enable" data-x="5" data-y="7"></div><div class="seat enable" data-x="6" data-y="7"></div><div class="seat enable" data-x="7" data-y="7"></div><div class="seat enable" data-x="8" data-y="7"></div><div class="seat enable" data-x="9" data-y="7"></div><div class="seat enable" data-x="10" data-y="7"></div><div class="seat disable" data-x="11" data-y="7"></div><div class="seat enable" data-x="12" data-y="7"></div><div class="seat enable" data-x="13" data-y="7"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="8"></div><div class="seat enable" data-x="1" data-y="8"></div><div class="seat disable" data-x="2" data-y="8"></div><div class="seat enable" data-x="3" data-y="8"></div><div class="seat enable" data-x="4" data-y="8"></div><div class="seat enable" data-x="5" data-y="8"></div><div class="seat enable" data-x="6" data-y="8"></div><div class="seat enable" data-x="7" data-y="8"></div><div class="seat enable" data-x="8" data-y="8"></div><div class="seat enable" data-x="9" data-y="8"></div><div class="seat enable" data-x="10" data-y="8"></div><div class="seat disable" data-x="11" data-y="8"></div><div class="seat enable" data-x="12" data-y="8"></div><div class="seat enable" data-x="13" data-y="8"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="9"></div><div class="seat enable" data-x="1" data-y="9"></div><div class="seat disable" data-x="2" data-y="9"></div><div class="seat enable" data-x="3" data-y="9"></div><div class="seat enable" data-x="4" data-y="9"></div><div class="seat enable" data-x="5" data-y="9"></div><div class="seat enable" data-x="6" data-y="9"></div><div class="seat enable" data-x="7" data-y="9"></div><div class="seat enable" data-x="8" data-y="9"></div><div class="seat enable" data-x="9" data-y="9"></div><div class="seat enable" data-x="10" data-y="9"></div><div class="seat disable" data-x="11" data-y="9"></div><div class="seat enable" data-x="12" data-y="9"></div><div class="seat enable" data-x="13" data-y="9"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="10"></div><div class="seat enable" data-x="1" data-y="10"></div><div class="seat disable" data-x="2" data-y="10"></div><div class="seat enable" data-x="3" data-y="10"></div><div class="seat enable" data-x="4" data-y="10"></div><div class="seat enable" data-x="5" data-y="10"></div><div class="seat enable" data-x="6" data-y="10"></div><div class="seat enable" data-x="7" data-y="10"></div><div class="seat enable" data-x="8" data-y="10"></div><div class="seat enable" data-x="9" data-y="10"></div><div class="seat enable" data-x="10" data-y="10"></div><div class="seat disable" data-x="11" data-y="10"></div><div class="seat enable" data-x="12" data-y="10"></div><div class="seat enable" data-x="13" data-y="10"></div></div>
+	<div class="line"><div class="seat enable" data-x="0" data-y="11"></div><div class="seat enable" data-x="1" data-y="11"></div><div class="seat disable" data-x="2" data-y="11"></div><div class="seat enable" data-x="3" data-y="11"></div><div class="seat enable" data-x="4" data-y="11"></div><div class="seat enable" data-x="5" data-y="11"></div><div class="seat enable" data-x="6" data-y="11"></div><div class="seat enable" data-x="7" data-y="11"></div><div class="seat enable" data-x="8" data-y="11"></div><div class="seat enable" data-x="9" data-y="11"></div><div class="seat enable" data-x="10" data-y="11"></div><div class="seat disable" data-x="11" data-y="11"></div><div class="seat enable" data-x="12" data-y="11"></div><div class="seat enable" data-x="13" data-y="11"></div></div>
+</body>
+-->
+</body>
+</html>
